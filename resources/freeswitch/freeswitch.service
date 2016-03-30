@@ -1,0 +1,43 @@
+[Unit]
+Description=The freeswitch telephony platform
+After=syslog.target network.target
+After=postgresql.service postgresql-9.4.service
+After=haveged.service
+
+[Service]
+Type=forking
+EnvironmentFile=-/etc/default/freeswitch
+PIDFile=/var/run/freeswitch/freeswitch.pid
+ExecStartPre=/bin/mkdir -p /var/run/freeswitch
+ExecStartPre=/bin/chown -R www-data:www-data /var/run/freeswitch
+;ExecStart=/usr/local/freeswitch/bin/freeswitch $DAEMON_OPTS
+ExecStart=/usr/local/freeswitch/bin/freeswitch -nonat -ncwait -u www-data -g www-data -run /var/run/freeswitch
+ExecStop=/bin/kill -TERM $MAINPID
+ExecReload=/bin/kill -s HUP $MAINPID
+PermissionsStartOnly=true
+TimeoutStopSec=45
+KillMode=process
+IgnoreSIGPIPE=no
+GuessMainPID=no
+RemainAfterExit=no
+PrivateTmp=true
+TimeoutSec=45s
+Restart=always
+; exec
+; User=root
+; Group=daemon
+LimitCORE=infinity
+LimitNOFILE=100000
+LimitNPROC=60000
+; LimitSTACK=240
+LimitRTPRIO=infinity
+LimitRTTIME=7000000
+IOSchedulingClass=realtime
+IOSchedulingPriority=2
+CPUSchedulingPolicy=rr
+CPUSchedulingPriority=89
+UMask=0007
+
+[Install]
+WantedBy=multi-user.target
+

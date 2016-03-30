@@ -1,0 +1,31 @@
+Welcome to FusionPBX
+
+You have already untared the Fusion_install.tgz file (or you would not be reading this.)
+
+INSTALL:
+
+Start by installing vim and python3
+Vim will make editing files easier.
+Python3 is required for the install scripts.
+
+type apt-get install vim python3
+
+Now you may enter ./Install.py
+Follow the prompts.
+An install from packages will take aprox 10 min on a reasonably fast system.
+An install from source will take aprox 45 min on the same quality of system.
+
+As the install finishes up you have some work to do via the web interface.
+A link will be shown, you may right click this and open it in a browser.
+Note: you will need to accept an exception for the SSL Certificate.
+This is ok to do. You may put a public verified Certificate later.
+
+The choice is yours they both install the same system.
+
+RECOMMENDATIONS:
+
+We recommend:
+OS			Debian 8
+Web server		nginx
+Data Base Server	Postgresql 9.4
+Freeswitch		Packages
