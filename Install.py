@@ -29,6 +29,7 @@ Install Freeswitch prior to installing Fusionpbx
 """
 
 import subprocess
+import apt
 import os
 import sys
 import socket
@@ -125,8 +126,22 @@ restart_group.add_argument("-r", "--restart", action = "store_true", help = "Res
 #===============================================================================
 
 print ("Installing dbus as it is required")
-ret = subprocess.call("apt-get install dbus", stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, shell=True)
-FPBXParms.check_ret(ret, "Updating the Debian repository")
+pkg_name="dbus"
+cache = apt.cache.Cache()
+cache.update()
+
+pkg = cache[pkg_name]
+if pkg.is_installed:
+    print "{pkg_name} already installed".format(pkg_name=pkg_name)
+else:
+    pkg.mark_install()
+
+    try:
+        cache.commit()
+        print("dbus installed")
+    except Exception:
+        "Failed to install dbus"
+
 
 #===============================================================================
 # Default is to install all from the start
