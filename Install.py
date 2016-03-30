@@ -132,7 +132,7 @@ cache.update()
 
 pkg = cache[pkg_name]
 if pkg.is_installed:
-    print "{pkg_name} already installed".format(pkg_name=pkg_name)
+    print ("{pkg_name} already installed".format(pkg_name=pkg_name))
 else:
     pkg.mark_install()
 
