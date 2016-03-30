@@ -159,8 +159,8 @@ if not args.restart:
 # Check for running as root
 #===============================================================================
 
-user = os.getlogin()
-if not user == "root":
+user = os.getuid()
+if not user == 0:
     print("This install script must run as root")
     sys.exit(1)
     
