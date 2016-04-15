@@ -190,6 +190,8 @@ def ifusionpbx():
     # We need to remove the default so it does not interfere with FusionPBX
     if os.path.islink("/etc/%s/sites-enabled/default.conf" % (ws)):
         os.remove("/etc/%s/sites-enabled/default.conf" % (ws))
+    if os.path.islink("/etc/%s/sites-enabled/default" % (ws)):
+        os.remove("/etc/%s/sites-enabled/default" % (ws))
     ret = subprocess.call("systemctl start %s" % (ws), stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, shell=True)
     
     #===============================================================================
