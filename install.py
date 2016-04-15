@@ -139,11 +139,7 @@ if not args.restart:
 
 user = os.getuid()
 if not user == 0:
-<<<<<<< HEAD:Install.py
-    print("This install script must run as root")
-=======
     print("This install script must be run as root")
->>>>>>> 	modified:   FPBXParms.py:install.py
     sys.exit(1)
     
 #===============================================================================
