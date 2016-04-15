@@ -42,7 +42,7 @@ def iwebserver():
         subprocess.call("/usr/bin/dpkg -i /var/cache/apt/archives/ppa-purge_0+bzr46.1~lucid1_all.deb", stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, shell=True)
     
     #=============================================================================== 
-    # www-data needs to own all of Freeswitch
+    # www-data needs access to all of Freeswitch
     #=============================================================================== 
     
     print("Setting access on Freeswitch for FusionPBX")

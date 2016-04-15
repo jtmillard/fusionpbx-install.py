@@ -31,6 +31,7 @@ import sys
 import os
 import random
 import FPBXParms
+import socket
 
 
 INSTALL_ROOT = os.getcwd()
@@ -85,7 +86,7 @@ def ask_yn(question):
 #===============================================================================
 
 def iask_questions():    
-    print("Welcome to FusionPBX installation.")
+    
     print("I am checking to see if there are parameters already defined")
     
     #===============================================================================
@@ -113,6 +114,11 @@ def iask_questions():
             print("If a question has a value listed that is the default")
             print("All default values can be selected by just pressing Enter")
             print("If a parameter does not have a default, a value must be entered")
+            
+            s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+            s.connect(('google.com', 0))
+            FPBXParms.PARMS["IP"][0] = (s.getsockname()[0])
+        
             BDR_ANS = "No"
 #             BDR_ANS = ask_yn(FPBXParms.PARMS["BDR"][1])
             FPBXParms.PARMS["BDR"][0] = BDR_ANS
@@ -121,8 +127,9 @@ def iask_questions():
             else:
                 PARM_LIST = FPBXParms.NON_BDR_PARMS
     
-            for index in PARM_LIST:
-                FPBXParms.ask_parm(index)
+            if len(PARM_LIST) > 0:
+                for index in PARM_LIST:
+                    FPBXParms.ask_parm(index)
     
             for index in FPBXParms.COMMON_PARMS:
                 FPBXParms.ask_parm(index)
@@ -138,6 +145,10 @@ def iask_questions():
     else:
         print("There is no predefined parameter file.")
         print("Please answer the following questions.")
+        
+        s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+        s.connect(('google.com', 0))
+        FPBXParms.PARMS["IP"][0] = (s.getsockname()[0])
 #        For now we are only installing a single switch, No BDR
         BDR_ANS = "No"
 #         BDR_ANS = ask_yn(FPBXParms.PARMS["BDR"][1])
@@ -146,9 +157,9 @@ def iask_questions():
             PARM_LIST = FPBXParms.BDR_PARMS
         else:
             PARM_LIST = FPBXParms.NON_BDR_PARMS
-    
-        for index in PARM_LIST:
-            FPBXParms.ask_parm(index)
+        if len(PARM_LIST) > 0:
+            for index in PARM_LIST:
+                FPBXParms.ask_parm(index)
     
         for index in FPBXParms.COMMON_PARMS:
             FPBXParms.ask_parm(index)
@@ -160,14 +171,15 @@ def iask_questions():
     #     FPBXParms.PARMS["FPBXuserPassword"][0] = mkpass()
     #     FPBXParms.PARMS["FPBXDBUserPassword"][0] = mkpass()
     
-        FPBXParms.save_parms()
-    
-#         if FPBXParms.PARMS["FS_Install_Type"][0] == "s":
-#             print("WARNING: There are currently problems with Video and installing from source")
-#             print("As of Freeswitch 1.6.")
-#             print("You may need to disable video to compile Freeswitch")
-#             ans = ask_yn("Do you wish to continue")
-#             if ans == "No":
-#                 sys.exit()
+    #===========================================================================
+    # We need to check for Ubuntu and insure it is a source install
+    #===========================================================================
         
+        if FPBXParms.PARMS["Distro"][0] == "trusty":
+            FPBXParms.PARMS["FS_Install_Type"][0] = "s"
+            print("This install is on Ubuntu and only source is currently configured")
+            print("I have set your Freeswitch install type to source")
+        
+        FPBXParms.save_parms()
+            
     return

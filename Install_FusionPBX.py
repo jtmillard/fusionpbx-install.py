@@ -35,6 +35,7 @@ import FPBXParms
 paclfolders = ["/etc/freeswitch",
               "/var/www",
               "/run/freeswitch",
+              "/usr/local/freeswitch",
               "/usr/include/freeswitch",
               "/usr/lib/debug/usr/lib/freeswitch",
               "/usr/lib/freeswitch",
@@ -63,6 +64,15 @@ def ifusionpbx():
         print("No predefined parameters to install FusionPBX")
         sys.exit(1)
         
+    #=======================================================================
+    # Determine web server type
+    #=======================================================================
+    
+    if FPBXParms.PARMS["WebServer"][0] == "a":
+        ws = "apache2"
+    if FPBXParms.PARMS["WebServer"][0] == "N":
+        ws = "nginx"
+        
     #===============================================================================
     # Set up Postgresql
     #===============================================================================
@@ -73,7 +83,7 @@ def ifusionpbx():
         if os.path.isfile("%s/resources/postgresql/pg_hba.conf" % (INSTALL_ROOT)):
             shutil.copyfile("%s/resources/postgresql/pg_hba.conf" % (INSTALL_ROOT), "/etc/postgresql/9.4/main/pg_hba.conf")
             ret = subprocess.call("systemctl restart postgresql", stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, shell=True)
-            FPBXParms.check_ret(ret, "Restart postgres for pg_hba.conf changes")
+            FPBXParms.check_ret(ret, "Restarting postgres for pg_hba.conf changes")
             time.sleep(5) # Give postgresql time to settle
         tmp = open("/var/lib/postgresql/install.sql", 'w')
         tmp.write("CREATE ROLE %s WITH SUPERUSER CREATEROLE CREATEDB LOGIN PASSWORD '%s';\n" % (FPBXParms.PARMS["DBUser"][0], FPBXParms.PARMS["DBUserPassword"][0]))
@@ -115,7 +125,7 @@ def ifusionpbx():
             sys.exit(6)
         
     #=============================================================================== 
-    # make www-data has access to the land
+    # make sure www-data and freeswitch have access to the land
     #=============================================================================== 
     
     if FPBXParms.PARMS["FS_Install_Type"][0] == "P":
@@ -124,6 +134,10 @@ def ifusionpbx():
                 ret = subprocess.call("setfacl -R -d -m u:www-data:rwx,g:www-data:rwx %s" % (folder), stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, shell=True)
                 FPBXParms.check_ret(ret, "Setting user acl for %s" % (folder))
                 ret = subprocess.call("setfacl -R -m u:www-data:rwx,g:www-data:rwx %s" % (folder), stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, shell=True)
+                FPBXParms.check_ret(ret, "Setting user acl for %s" % (folder))
+                ret = subprocess.call("setfacl -R -d -m u:www-data:rwx,g:freeswitch:rwx %s" % (folder), stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, shell=True)
+                FPBXParms.check_ret(ret, "Setting user acl for %s" % (folder))
+                ret = subprocess.call("setfacl -R -m u:www-data:rwx,g:freeswitch:rwx %s" % (folder), stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, shell=True)
                 FPBXParms.check_ret(ret, "Setting user acl for %s" % (folder))
             else:
                 print("SetFacl:")
@@ -134,6 +148,10 @@ def ifusionpbx():
                 ret = subprocess.call("setfacl -R -d -m u:www-data:rwx,g:www-data:rwx %s" % (folder), stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, shell=True)
                 FPBXParms.check_ret(ret, "Setting user acl for %s" % (folder))
                 ret = subprocess.call("setfacl -R -m u:www-data:rwx,g:www-data:rwx %s" % (folder), stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, shell=True)
+                FPBXParms.check_ret(ret, "Setting user acl for %s" % (folder))
+                ret = subprocess.call("setfacl -R -d -m u:www-data:rwx,g:freeswitch:rwx %s" % (folder), stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, shell=True)
+                FPBXParms.check_ret(ret, "Setting user acl for %s" % (folder))
+                ret = subprocess.call("setfacl -R -m u:www-data:rwx,g:freeswitch:rwx %s" % (folder), stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, shell=True)
                 FPBXParms.check_ret(ret, "Setting user acl for %s" % (folder))
             else:
                 print("SetFacl:")
@@ -152,27 +170,27 @@ def ifusionpbx():
        
     #===========================================================================
     # Set up the ssl certificate
-    #TODO: Set up our own signed cert when we can
+    #TODO: Set up our own signed certificate when we can
     #===========================================================================
     
-    if not os.path.islink("/etc/ssl/private/nginx.key"):
-        os.symlink("/etc/ssl/private/ssl-cert-snakeoil.key", "/etc/ssl/private/nginx.key")
-    if not os.path.islink("/etc/ssl/certs/nginx.crt"):
-        os.symlink("/etc/ssl/certs/ssl-cert-snakeoil.pem", "/etc/ssl/certs/nginx.crt")
+    if not os.path.islink("/etc/ssl/private/%s.key" % (ws)):
+        os.symlink("/etc/ssl/private/ssl-cert-snakeoil.key", "/etc/ssl/private/%s.key" % (ws))
+    if not os.path.islink("/etc/ssl/certs/%s.crt" % (ws)):
+        os.symlink("/etc/ssl/certs/ssl-cert-snakeoil.pem", "/etc/ssl/certs/%s.crt" % (ws))
     
     #===============================================================================
-    # Set up Nginx config to support FusionPBX
+    # Set up Web Server configuration to support FusionPBX
     #===============================================================================
     
-    print("Setting nginx to run FusionPBX")
-    ret = subprocess.call("systemctl stop nginx", stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, shell=True)
-    shutil.copyfile("%s/resources/nginx/sites-available/fusionpbx" % (INSTALL_ROOT), "/etc/nginx/sites-available/fusionpbx")
-    if not os.path.islink("/etc/nginx/sites-enabled/fusionpbx"):
-        os.symlink("/etc/nginx/sites-available/fusionpbx", "/etc/nginx/sites-enabled/fusionpbx")
+    print("Setting Webserver to run FusionPBX")
+    ret = subprocess.call("systemctl stop %s" % (ws), stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, shell=True)
+    shutil.copyfile("%s/resources/%s/sites-available/fusionpbx.conf" % (INSTALL_ROOT, ws), "/etc/%s/sites-available/fusionpbx.conf" % (ws))
+    if not os.path.islink("/etc/%s/sites-enabled/fusionpbx" % (ws)):
+        os.symlink("/etc/%s/sites-available/fusionpbx.conf" % (ws), "/etc/%s/sites-enabled/fusionpbx.conf" % (ws))
     # We need to remove the default so it does not interfere with FusionPBX
-    if os.path.islink("/etc/nginx/sites-enabled/default"):
-        os.remove("/etc/nginx/sites-enabled/default")
-    ret = subprocess.call("systemctl start nginx", stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, shell=True)
+    if os.path.islink("/etc/%s/sites-enabled/default.conf" % (ws)):
+        os.remove("/etc/%s/sites-enabled/default.conf" % (ws))
+    ret = subprocess.call("systemctl start %s" % (ws), stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, shell=True)
     
     #===============================================================================
     # Request user to run the install procedure in FusionPBX
@@ -183,10 +201,13 @@ def ifusionpbx():
     print("Hint: you may copy and paste the URL from the line above.")
     print("Please fill out the install pages with the information listed here.")
     FPBXParms.show_parms()
-    input("I'll wait here while you do that press Enter when you are finished. ")
+    print("I'll wait here while you do that.")
+    print("Please wait until the login screen appears")
+    input("Press Enter when you are finished. ")
     if os.path.isfile("/var/www/fusionpbx/resources/config.php"):
         print("Thank you")
     else:
-        print("The configuration did not get saved I can not go on.")
+        print("The configuration did not get saved, I can not go on.")
+        print("WARNING: Fail2ban is not installed. Your system may be subject to attack!")
         sys.exit(6)
     return

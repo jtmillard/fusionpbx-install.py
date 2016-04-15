@@ -29,13 +29,14 @@ import FPBXParms
 
 ADDON_APPS = {"jessie":"libdb-dev libpq-dev libtool-bin libtiff5-dev",
               "precise":"libtif4.dev",
-              "wheezy":"libdb-dev libpq-dev libtiff5-dev"
+              "wheezy":"libdb-dev libpq-dev libtiff5-dev",
+              "trusty":"libdb-dev libpq-dev libtiff5-dev"
               }
 COMMON_APPS = ["autoconf automake bison build-essential bzip2 curl devscripts fail2ban g++ gawk",
                "gettext git git-core ghostscript haveged htop lame libssl-dev libcurl4-openssl-dev libdb-dev libedit-dev",
                "libgdbm-dev libjpeg-dev libldns-dev libmemcached-dev libmyodbc libncurses5-dev libpcre3-dev libperl-dev",
-               "libpq-dev libspeex-dev libspeexdsp-dev libsqlite3-dev libssl-dev libtiff5-dev",
-               "libtiff-tools libtool libtool-bin make memcached ntp php-db php5 php5-cli php5-fpm php5-pgsql",
+               "libpq-dev libspeex-dev libspeexdsp-dev libsqlite3-dev libssl-dev libtiff5-dev yasm nasm",
+               "libtiff-tools libtool make memcached ntp php-db php5 php5-cli php5-fpm php5-pgsql",
                "php5-sqlite php5-odbc php5-curl php5-imap php5-mcrypt pkg-config pkg-config python-dev",
                "python-software-properties screen ssl-cert ssh subversion time unixodbc unixodbc-dev vim"
                ]
@@ -52,13 +53,13 @@ def ipackages():
         print("Error no install parameters")
         sys.exit(1)
         
-    print("Updating the Debian repository")
+    print("Updating the OS repository")
     ret = subprocess.call("apt-get update", stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, shell=True)
-    FPBXParms.check_ret(ret, "Updating the Debian repository")
+    FPBXParms.check_ret(ret, "Updating the OS repository")
     print("Upgrading the OS to the latest packages")
     ret = subprocess.call("apt-get -y upgrade", stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, shell=True)
     FPBXParms.check_ret(ret,"Upgrading the OS to the latest packages")
-    print("Installing additional packages needed for FusionPBX to run under Debian %s" % (FPBXParms.PARMS["Distro"][0]))
+    print("Installing additional packages needed for FusionPBX to run under OS %s" % (FPBXParms.PARMS["Distro"][0]))
     for i in range(0,len(COMMON_APPS) + 1):
         print(i, end="", flush=True)
     print("", end="\r", flush=True)

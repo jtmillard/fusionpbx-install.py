@@ -40,13 +40,13 @@ def ifail2ban():
     
     print("Setting up fail2ban to protect your system from some types of attacks")
     if os.path.isfile("%s/resources/fail2ban/jail.local" % (INSTALL_ROOT)):
-        if FPBXParms.whitelist != '':
+        if FPBXParms.whitelist != None:
             shutil.copyfile("%s/resources/fail2ban/jail.package" % (INSTALL_ROOT), "/etc/fail2ban/jail.local")
         else:
             shutil.copyfile("%s/resources/fail2ban/jail.source" % (INSTALL_ROOT), "/etc/fail2ban/jail.local")
             shutil.copyfile("%s/resources/fail2ban/freeswitch-dos.conf" % (INSTALL_ROOT), "/etc/fail2ban/filter.d/freeswitch-dos.conf")
             shutil.copyfile("%s/resources/fail2ban/fusionpbx.conf" % (INSTALL_ROOT), "/etc/fail2ban/filter.d/fusionpbx.conf")
-            if FPBXParms.PARMS["FS_Install_Type"][0] == "P":
+            if FPBXParms.whitelist != None:
                 ftb = open("/etc/fail2ban/jail.local", 'a')
                 ftb.write("[DEFAULT]")
                 ftb.write("\n")

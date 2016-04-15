@@ -31,12 +31,15 @@ import FPBXParms
 
 FS_KEY = {"jessie":"https://files.freeswitch.org/repo/deb/debian/freeswitch_archive_g0.pub",
           "Precise":"Add key here",
-          "wheezy":"Add key here"
+          "wheezy":"Add key here",
+          "trusty":"https://files.freeswitch.org/repo/deb/debian/freeswitch_archive_g0.pub"
           } 
 FS_REPO = {"jessie":"deb http://files.freeswitch.org/repo/deb/freeswitch-1.6/ jessie main",
            "precise":"add repo here",
-           "wheezy":"add repo here"
+           "wheezy":"add repo here",
+           "trusty":"deb http://files.freeswitch.org/repo/deb/freeswitch-1.6/ jessie main"
            } 
+
 DEPENDENCIES = "libyuv-dev libvpx2-dev"
 #===============================================================================
 # Ask a yes or no question
@@ -88,7 +91,7 @@ def ifreeswitch():
                 
             # Now we actually install Freeswitch from binary packages
             ret = subprocess.call("apt-get update && apt-get install -y freeswitch-all freeswitch-all-dbg gdb", stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, shell=True)
-            FPBXParms.check_ret(ret, "Installing Freeswitch Freeswitch")
+            FPBXParms.check_ret(ret, "Installing Freeswitch")
         else:
             print("I can not install from binary packages for the %s distro" % (FPBXParms.PARMS["Distro"][0]))
             sys.exit(4)

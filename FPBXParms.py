@@ -39,7 +39,7 @@ PARMS = {
     "BDR":["N", "Flag indicating BDR type of installation should be Yes or No"],
 #     "Host1":["NotSet", "The host name of the first server"],
 #     "Host2":["", "The host name of the second server"],
-    "IP":["", "The IP address of the first server"],
+    "IP":["", "The IP address of this server"],
 #     "IP2":["", "The IP address of the second server"],
 #     "Domain":["", "The domain name for this/these server(s)"],
 #     "First":["", "Is this the first server of a set"],
@@ -56,7 +56,7 @@ PARMS = {
 
 BDR_PARMS = ["Host1", "Host2", "IP", "IP2", "Domain", "First"]
 # NON_BDR_PARMS = ["Host1", "IP", "Domain"]
-NON_BDR_PARMS = ["IP"]
+NON_BDR_PARMS = []
 COMMON_PARMS = ["User", "UserPassword", "DBUser", "DBUserPassword", "DBName", "DatabaseType", "WebServer", "FS_Install_Type"]
 INSTALL_ROOT = os.getcwd()
 INSTALL_PROGRESS = 0
@@ -144,7 +144,11 @@ def show_parms():
     
     print("Parameter        Value                Description")
     print("================ ==================== ======================")
-    for val in parm_list_m:
+    if len(parm_list_m) > 0:
+        for val in parm_list_m:
+            print("%-16s %-20s %s" % (val, PARMS[val][0], PARMS[val][1]))
+    else:
+        val = "IP"
         print("%-16s %-20s %s" % (val, PARMS[val][0], PARMS[val][1]))
         
     for val in COMMON_PARMS:
