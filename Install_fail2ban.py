@@ -31,24 +31,24 @@ import FPBXParms
 
 def ifail2ban():
     
-    ipt_cmds = ["iptabels -A INPUT -i lo -j ACCEPT",
-                "iptabels -A INPUT -m state --state ESTABLISHED,RELATED -j ACCEPT",
-                "iptabels -A INPUT -p tcp --dport 22 -j ACCEPT|",
-                "iptabels -A INPUT -p tcp --dport 80 -j ACCEPT|",
-                "iptabels -A INPUT -p tcp --dport 443 -j ACCEPT",
-                "iptabels -A INPUT -p tcp --dport 5060 -j ACCEPT",
-                "iptabels -A INPUT -p udp --dport 5060 -j ACCEPT",
-                "iptabels -A INPUT -p tcp --dport 5080 -j ACCEPT",
-                "iptabels -A INPUT -p udp --dport 5080 -j ACCEPT",
-                "iptabels -A INPUT -p udp --dport 16384:32768 -j ACCEPT",
-                "iptabels -P INPUT DROP",
-                "iptabels -P FORWARD DROP",
-                "iptabels -P OUTPUT ACCEPT",
-                "iptabels -A INPUT -p icmp --icmp-type echo-request -j ACCEPT",
-                "iptabels -I INPUT -j DROP -p tcp --dport 5060 -m string --string \"friendly-scanner\" --algo bm",
-                "iptabels -I INPUT -j DROP -p tcp --dport 5080 -m string --string \"friendly-scanner\" --algo bm",
-                "iptabels -I INPUT -j DROP -p udp --dport 5060 -m string --string \"friendly-scanner\" --algo bm",
-                "iptabels -I INPUT -j DROP -p udp --dport 5080 -m string --string \"friendly-scanner\" --algo bm"                
+    ipt_cmds = ["iptables -A INPUT -i lo -j ACCEPT",
+                "iptables -A INPUT -m state --state ESTABLISHED,RELATED -j ACCEPT",
+                "iptables -A INPUT -p tcp --dport 22 -j ACCEPT",
+                "iptables -A INPUT -p tcp --dport 80 -j ACCEPT",
+                "iptables -A INPUT -p tcp --dport 443 -j ACCEPT",
+                "iptables -A INPUT -p tcp --dport 5060 -j ACCEPT",
+                "iptables -A INPUT -p udp --dport 5060 -j ACCEPT",
+                "iptables -A INPUT -p tcp --dport 5080 -j ACCEPT",
+                "iptables -A INPUT -p udp --dport 5080 -j ACCEPT",
+                "iptables -A INPUT -p udp --dport 16384:32768 -j ACCEPT",
+                "iptables -P INPUT DROP",
+                "iptables -P FORWARD DROP",
+                "iptables -P OUTPUT ACCEPT",
+                "iptables -A INPUT -p icmp --icmp-type echo-request -j ACCEPT",
+                "iptables -I INPUT -j DROP -p tcp --dport 5060 -m string --string \"friendly-scanner\" --algo bm",
+                "iptables -I INPUT -j DROP -p tcp --dport 5080 -m string --string \"friendly-scanner\" --algo bm",
+                "iptables -I INPUT -j DROP -p udp --dport 5060 -m string --string \"friendly-scanner\" --algo bm",
+                "iptables -I INPUT -j DROP -p udp --dport 5080 -m string --string \"friendly-scanner\" --algo bm"                
                 ]
     
     INSTALL_ROOT = os.getcwd()
@@ -78,8 +78,11 @@ def ifail2ban():
     
     print("Setting iptables rules")      
     for cmd in ipt_cmds:
-        subprocess.call(cmd, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, shell=True)
+        ret = subprocess.call(cmd, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, shell=True)
+        FPBXParms.check_ret(ret, cmd)
     print("Installing iptables persistence module")
+    print("You will see two questions about saving the iptable rules")
     print("Please select yes when asked")
-    subprocess.call("apt-get install iptables-persistent", stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, shell=True)
+    ans = input("press ENTER when you are ready")
+    subprocess.call("apt-get -y install iptables-persistent", shell=True)
     return
