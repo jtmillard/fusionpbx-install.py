@@ -213,3 +213,11 @@ def ifusionpbx():
         print("WARNING: Fail2ban is not installed. Your system may be subject to attack!")
         sys.exit(6)
     return
+
+#===============================================================================
+# Restart freeswitch so FS will see any changes to config we just made.
+#===============================================================================
+    
+    ret = subprocess.call("sytemctl restart freeswitch", stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, shell=True)
+    FPBXParms.check_ret(ret, "Restarting Freeswitch")
+    
