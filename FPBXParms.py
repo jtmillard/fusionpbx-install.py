@@ -3,6 +3,7 @@ Created on Jan 21, 2016
 
 @author: jim
 '''
+import subprocess
 """
         FusionPBX
         Version: MPL 1.1
@@ -195,3 +196,16 @@ def load_show():
 def set_resource(path):
     INSTALL_ROOT = path
     return()
+
+#===============================================================================
+# Check for a program or os module installed
+#===============================================================================
+
+def is_installed(name):
+    installed = subprocess.check_output("dpkg-query -l", stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, shell = True)
+    found = False
+    for line in installed:
+        if name in line:
+            found = True
+            return(found)
+    return(found)

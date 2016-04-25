@@ -112,12 +112,12 @@ install_group = parser.add_mutually_exclusive_group(required = False)
 restart_group = parser.add_argument_group(title = "Restart")
 oneonly_group = parser.add_argument_group(title = "One module only")
 install_group.add_argument("-a", "--all", action = "store_const", const = 0, dest = "in_start", help = "Install all modules")
-install_group.add_argument("-p", "--Packages", action = "store_const", const = 10, dest = "in_start", help = "Start install with required packages")
-install_group.add_argument("-d", "--Database", action = "store_const", const = 20, dest = "in_start", help = "Start install with Database program")
-install_group.add_argument("-s", "--FreeSwitch", action = "store_const", const = 30, dest = "in_start", help = "Start install with Freeswitch")
-install_group.add_argument("-w", "--WebServer", action = "store_const", const = 40, dest = "in_start", help = "Start install with Web server")
-install_group.add_argument("-f", "--FusionPBX", action = "store_const", const = 50, dest = "in_start", help = "Start install with FusionPBX")
-install_group.add_argument("-b", "--fail2ban", action = "store_const", const = 60, dest = "in_start", help = "Set up fail2ban")
+install_group.add_argument("-b", "--fail2ban", action = "store_const", const = 10, dest = "in_start", help = "Set up fail2ban")
+install_group.add_argument("-p", "--Packages", action = "store_const", const = 20, dest = "in_start", help = "Start install with required packages")
+install_group.add_argument("-d", "--Database", action = "store_const", const = 30, dest = "in_start", help = "Start install with Database program")
+install_group.add_argument("-s", "--FreeSwitch", action = "store_const", const = 40, dest = "in_start", help = "Start install with Freeswitch")
+install_group.add_argument("-w", "--WebServer", action = "store_const", const = 50, dest = "in_start", help = "Start install with Web server")
+install_group.add_argument("-f", "--FusionPBX", action = "store_const", const = 60, dest = "in_start", help = "Start install with FusionPBX")
 oneonly_group.add_argument("-o", "--One", action = "store_true", help = "Run One module only")
 restart_group.add_argument("-r", "--restart", action = "store_true", help = "Restart a failed install")
 
@@ -363,25 +363,36 @@ if answer == "Yes":
             print("This is a new install, you should not request a restart")
             print("Install Progress is %d" % INSTALL_PROGRESS)
             sys.exit(0)
-        
+            
 #===============================================================================
-# Install necessary packages
+# Set up fail2ban
 #===============================================================================
 
     if INSTALL_PROGRESS < 11:
-        Install_packages.ipackages()
+        Install_fail2ban.ifail2ban()
         INSTALL_PROGRESS = 12
         save_parms()
         if args.One:
             sys.exit(0)
-        
+                
+#===============================================================================
+# Install necessary packages
+#===============================================================================
+
+    if INSTALL_PROGRESS < 21:
+        Install_packages.ipackages()
+        INSTALL_PROGRESS = 22
+        save_parms()
+        if args.One:
+            sys.exit(0)
+            
 #===========================================================================
 # Install Postgresql 
 #===========================================================================
 
-    if INSTALL_PROGRESS < 21:
+    if INSTALL_PROGRESS < 31:
         Install_postgresql.ipostgresql()
-        INSTALL_PROGRESS = 22
+        INSTALL_PROGRESS = 32
         save_parms()
         if args.One:
             sys.exit(0)
@@ -390,9 +401,9 @@ if answer == "Yes":
 # Install Freeswitch
 #===============================================================================
     
-    if INSTALL_PROGRESS < 31:
+    if INSTALL_PROGRESS < 41:
         Install_Freeswitch.ifreeswitch()
-        INSTALL_PROGRESS = 32
+        INSTALL_PROGRESS = 42
         save_parms()
         if args.One:
             sys.exit(0)
@@ -401,9 +412,9 @@ if answer == "Yes":
 # Install the web server
 #===============================================================================
     
-    if INSTALL_PROGRESS < 41:
+    if INSTALL_PROGRESS < 51:
         Install_webserver.iwebserver()
-        INSTALL_PROGRESS = 42
+        INSTALL_PROGRESS = 52
         save_parms()
         if args.One:
             sys.exit(0)
@@ -412,23 +423,13 @@ if answer == "Yes":
 # Install FusionPBX
 #===============================================================================
 
-    if INSTALL_PROGRESS < 51:
-        Install_FusionPBX.ifusionpbx()
-        INSTALL_PROGRESS = 52
-        save_parms()
-        if args.One:
-            sys.exit(0)
-
-#===============================================================================
-# Set up fail2ban
-#===============================================================================
-
     if INSTALL_PROGRESS < 61:
-        Install_fail2ban.ifail2ban()
+        Install_FusionPBX.ifusionpbx()
         INSTALL_PROGRESS = 62
         save_parms()
         if args.One:
             sys.exit(0)
+
 
 #===============================================================================
 # Install Completed

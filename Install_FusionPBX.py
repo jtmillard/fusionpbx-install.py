@@ -199,7 +199,7 @@ def ifusionpbx():
     #===============================================================================
     
     print("The installation of FusionPBX is almost done.")
-    print("Point your browser at http://%s/" % (FPBXParms.PARMS["IP"][0]))
+    print("Point your browser at https://%s/" % (FPBXParms.PARMS["IP"][0]))
     print("Hint: you may copy and paste the URL from the line above.")
     print("Please fill out the install pages with the information listed here.")
     FPBXParms.show_parms()
@@ -209,7 +209,8 @@ def ifusionpbx():
     if os.path.isfile("/var/www/fusionpbx/resources/config.php"):
         print("Thank you")
     else:
-        print("The configuration did not get saved, I can not go on.")
+        print("The configuration file is missing,")
+        print("Confiuration failes, I can not go on.")
         print("WARNING: Fail2ban is not installed. Your system may be subject to attack!")
         sys.exit(6)
     return
