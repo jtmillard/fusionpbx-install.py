@@ -135,9 +135,9 @@ def ifusionpbx():
                 FPBXParms.check_ret(ret, "Setting user acl for %s" % (folder))
                 ret = subprocess.call("setfacl -R -m u:www-data:rwx,g:www-data:rwx %s" % (folder), stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, shell=True)
                 FPBXParms.check_ret(ret, "Setting user acl for %s" % (folder))
-                ret = subprocess.call("setfacl -R -d -m u:www-data:rwx,g:freeswitch:rwx %s" % (folder), stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, shell=True)
+                ret = subprocess.call("setfacl -R -d -m u:freeswitch:rwx,g:freeswitch:rwx %s" % (folder), stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, shell=True)
                 FPBXParms.check_ret(ret, "Setting user acl for %s" % (folder))
-                ret = subprocess.call("setfacl -R -m u:www-data:rwx,g:freeswitch:rwx %s" % (folder), stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, shell=True)
+                ret = subprocess.call("setfacl -R -m u:freeswitch:rwx,g:freeswitch:rwx %s" % (folder), stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, shell=True)
                 FPBXParms.check_ret(ret, "Setting user acl for %s" % (folder))
             else:
                 print("SetFacl:")
@@ -149,9 +149,9 @@ def ifusionpbx():
                 FPBXParms.check_ret(ret, "Setting user acl for %s" % (folder))
                 ret = subprocess.call("setfacl -R -m u:www-data:rwx,g:www-data:rwx %s" % (folder), stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, shell=True)
                 FPBXParms.check_ret(ret, "Setting user acl for %s" % (folder))
-                ret = subprocess.call("setfacl -R -d -m u:www-data:rwx,g:freeswitch:rwx %s" % (folder), stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, shell=True)
+                ret = subprocess.call("setfacl -R -d -m u:freeswitch:rwx,g:freeswitch:rwx %s" % (folder), stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, shell=True)
                 FPBXParms.check_ret(ret, "Setting user acl for %s" % (folder))
-                ret = subprocess.call("setfacl -R -m u:www-data:rwx,g:freeswitch:rwx %s" % (folder), stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, shell=True)
+                ret = subprocess.call("setfacl -R -m u:freeswitch,g:freeswitch:rwx %s" % (folder), stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, shell=True)
                 FPBXParms.check_ret(ret, "Setting user acl for %s" % (folder))
             else:
                 print("SetFacl:")
