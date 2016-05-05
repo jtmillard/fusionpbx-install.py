@@ -42,7 +42,11 @@ paclfolders = ["/etc/freeswitch",
               "/usr/share/freeswitch",
               "/var/lib/freeswitch",
               "/var/log/freeswitch",
-              "/var/www/fusionpbx"
+              "/var/www/fusionpbx",
+              "/var/cache/freeswitch",
+              "/usr/share/freeswitch",
+              "/var/run/freeswitch",
+              "/etc/freeswitch"
               ]
 saclfolders = ["/etc/freeswitch",
                "/run/freeswitch",
@@ -141,7 +145,7 @@ def ifusionpbx():
                 FPBXParms.check_ret(ret, "Setting user acl for %s" % (folder))
             else:
                 print("SetFacl:")
-                print("Error: %s is not a directory" % (folder))
+                print("%s is not a directory on this system" % (folder))
     else:
         for folder in saclfolders:
             if os.path.isdir(folder):
@@ -155,7 +159,7 @@ def ifusionpbx():
                 FPBXParms.check_ret(ret, "Setting user acl for %s" % (folder))
             else:
                 print("SetFacl:")
-                print("Error: %s is not a directory" % (folder))
+                print("%s is not a directory on this system" % (folder))
                     
     #===============================================================================
     # Insure FusionPBX config.php is not present
@@ -184,15 +188,30 @@ def ifusionpbx():
     
     print("Setting Webserver to run FusionPBX")
     ret = subprocess.call("systemctl stop %s" % (ws), stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, shell=True)
+    FPBXParms.check_ret(ret, "Stopping %s" % (ws))
+    ret = subprocess.call("a2enmod ssl", stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, shell=True)
+    FPBXParms.check_ret(ret, "Enableing ssl")
+    if FPBXParms.PARMS["WebServer"][0] == "a":
+        print("We need to set up a temporary certificate for ssl")
+        print("Use the server IP address for the FQDN question")
+        print("This temporary certificate is set to expire in 1 year")
+        print("Please set up a permanant certificate before your switch in placed in service")
+        print("Please answer the questions when they appear")
+        os.mkdir("/etc/apache2/ssl")
+        subprocess.call("openssl req -x509 -nodes -days 365 -newkey rsa:2048 -keyout /etc/apache2/ssl/apache.key -out /etc/apache2/ssl/apache.crt", shell=True)
+        
     shutil.copyfile("%s/resources/%s/sites-available/fusionpbx.conf" % (INSTALL_ROOT, ws), "/etc/%s/sites-available/fusionpbx.conf" % (ws))
-    if not os.path.islink("/etc/%s/sites-enabled/fusionpbx" % (ws)):
+    if not os.path.islink("/etc/%s/sites-enabled/fusionpbx.conf" % (ws)):
         os.symlink("/etc/%s/sites-available/fusionpbx.conf" % (ws), "/etc/%s/sites-enabled/fusionpbx.conf" % (ws))
     # We need to remove the default so it does not interfere with FusionPBX
     if os.path.islink("/etc/%s/sites-enabled/default.conf" % (ws)):
         os.remove("/etc/%s/sites-enabled/default.conf" % (ws))
+    if os.path.islink("/etc/%s/sites-enabled/000-default.conf" % (ws)):
+        os.remove("/etc/%s/sites-enabled/000-default.conf" % (ws))
     if os.path.islink("/etc/%s/sites-enabled/default" % (ws)):
         os.remove("/etc/%s/sites-enabled/default" % (ws))
     ret = subprocess.call("systemctl start %s" % (ws), stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, shell=True)
+    FPBXParms.check_ret(ret, "Starting %s" %(ws))
     
     #===============================================================================
     # Request user to run the install procedure in FusionPBX
@@ -201,17 +220,16 @@ def ifusionpbx():
     print("The installation of FusionPBX is almost done.")
     print("Point your browser at https://%s/" % (FPBXParms.PARMS["IP"][0]))
     print("Hint: you may copy and paste the URL from the line above.")
-    print("Please fill out the install pages with the information listed here.")
+    print("Please fill out the install pages using the information listed here.")
     FPBXParms.show_parms()
     print("I'll wait here while you do that.")
-    print("Please wait until the login screen appears")
-    input("Press Enter when you are finished. ")
+    input("Press Enter after the login screen appears. ")
     if os.path.isfile("/var/www/fusionpbx/resources/config.php"):
         print("Thank you")
     else:
         print("The configuration file is missing,")
-        print("Confiuration failes, I can not go on.")
-        print("WARNING: Fail2ban is not installed. Your system may be subject to attack!")
+        print("Confiuration of FusionPBX failed,")
+        print("Your FusionPBX server is not installed!")
         sys.exit(6)
     return
 

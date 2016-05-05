@@ -80,9 +80,11 @@ def ifail2ban():
     for cmd in ipt_cmds:
         ret = subprocess.call(cmd, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, shell=True)
         FPBXParms.check_ret(ret, cmd)
+    print("")
+    print("NOTE: Please read this before you continue!")
     print("Installing iptables persistence module")
     print("You will see two questions about saving the iptable rules")
     print("Please select yes for both when asked")
-    ans = input("press ENTER when you are ready")
+    input("press ENTER when you are ready")
     subprocess.call("apt-get -y install iptables-persistent", shell=True)
     return

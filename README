@@ -2,6 +2,21 @@ Welcome to FusionPBX
 
 You have already untared the Fusion_install.tgz file (or you would not be reading this.)
 
+This program will install FusionPBX, Freeswitch, Apache2/nginx, postgresql.
+These programs will result in a functional Phone Switch.
+
+We recommend using the following:
+
+RECOMMENDATIONS:
+
+We recommend:
+OS			Debian 8
+Web server		nginx
+Data Base Server	Postgresql 9.4
+Freeswitch		Packages
+
+The install script will let you select the last three.
+
 INSTALL:
 
 Start by installing vim and python3
@@ -12,21 +27,41 @@ type apt-get install vim python3
 
 Now you may enter ./install.py
 Follow the prompts.
-An install from packages will take aprox 10 min on a reasonably fast system.
-An install from source will take aprox 45 min on the same quality of system.
+Please read the prompts as some of the instructions may have changed.
+An install from packages will take approximately 10 minutes on a reasonably fast system.
+An install from source will take approximately 45 minutes on the same quality of system.
 
-As the install finishes up you have some work to do via the web interface.
+As the install finishes up you have some work to do.
+If you are using Apache2 you will need to enter information for the temporary ssl certificate.
+Finally you need to complete the installation via the web interface.
 A link will be shown, you may right click this to open it in a browser.
 If the right click does not work copy and paste the URL into your browser.
 Note: you will need to accept an exception for the SSL Certificate.
-This is ok to do. You may put a public verified Certificate later.
+This is ok to do. We recommend you install a public verified Certificate later.
+
+The parameters you entered are shown again. This is to assist you in filling out
+the web pages during this part of the installation.
 
 The choice between packages and source is yours, they both install the same system.
 
-RECOMMENDATIONS:
 
-We recommend:
-OS			Debian 8
-Web server		nginx
-Data Base Server	Postgresql 9.4
-Freeswitch		Packages
+POST INSTALL:
+FusionPBX Post Installation Instructions
+
+1. Open FusionPBX in a browser.
+2. Advanced -> Upgrade
+3. Click on App Defaults.
+4. Click on Execute Button.
+5. Status -> SIP Status
+6. Click start button for:
+   Sofia Status Profile External
+   Sofia status profile internal
+ Also start the ipv6 options if you use ipv6
+ 
+To enable HTTP provisioning: (Polycom, Yealink and other phones)
+Advanced -> Default Settings
+Enter Provision in the search box
+Enter the http_auth_password and http_auth_username (click the edit button)
+Enable both of these and the enabled entry
+You can do this by clicking on the False status for each (they will change to True)
+Now you can set up your extensions and devices.

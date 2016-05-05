@@ -42,6 +42,7 @@ import Install_Freeswitch
 import Install_FusionPBX
 import Install_fail2ban
 import Install_webserver
+import Post_Install
 
 KNOWN_DISTROS = ["lucid",
                  "squeeze",
@@ -431,13 +432,17 @@ if answer == "Yes":
             sys.exit(0)
 
 
+
 #===============================================================================
 # Install Completed
 #===============================================================================
 
+
 else:
     print("Thank you for visiting")
     sys.exit(0)
+    
+Post_Install.ipostinstall()    
     
 print("\n\n")
 print("===========================================")

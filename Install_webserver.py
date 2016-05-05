@@ -1,7 +1,5 @@
 import subprocess
 import os
-import pwd
-import grp
 import sys
 import FPBXParms
 
@@ -25,21 +23,20 @@ def iwebserver():
         ws = "nginx"
     print("Installing %s for our Webserver " % (ws))
     if FPBXParms.PARMS["WebServer"][0] == "a":
-        subprocess.call("apt-get -y install apache2", stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, shell=True)
+        ret = subprocess.call("apt-get -y install apache2 libapache2-mod-php5", stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, shell=True)
+        FPBXParms.check_ret(ret, "Installing Apache2")
     elif FPBXParms.PARMS["WebServer"][0] == "N":
         # apache2 may have been installed as a dependency for another package
         # Shutdown and disable apache2
         subprocess.call("systemctl --quiet disable apache2", stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, shell=True)
         subprocess.call("systemctl --quiet stop apache2", stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, shell=True)
         subprocess.call("apt-get -y remove apache2 apache2-mpm-prefork apache2-utils apache2.2-bin apache2.2-common libapache2-mod-php5 libapr1 libaprutil1 libaprutil1-dbd-sqlite3 libaprutil1-ldap", stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, shell=True)
-        subprocess.call("apt-get -y install nginx", stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, shell=True)
+        ret = subprocess.call("apt-get -y install nginx", stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, shell=True)
+        FPBXParms.check_ret(ret, "Installing nginx")
     else:
         print("No Web Server was defined, FusionPBX will not operate with out a Web Server")
         sys.exit(6)
-    #TODO: Do we need this code? 
-    if not os.path.isfile("/usr/sbin/ppa-purge"):
-        subprocess.call("/usr/bin/wget -O /var/cache/apt/archives/ppa-purge_0+bzr46.1~lucid1_all.deb http://us.archive.ubuntu.com/ubuntu/pool/universe/p/ppa-purge/ppa-purge_0+bzr46.1~lucid1_all.deb", stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, shell=True)
-        subprocess.call("/usr/bin/dpkg -i /var/cache/apt/archives/ppa-purge_0+bzr46.1~lucid1_all.deb", stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, shell=True)
+
     
     #=============================================================================== 
     # www-data needs access to all of Freeswitch
