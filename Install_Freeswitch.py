@@ -73,7 +73,7 @@ def ifreeswitch():
 	#===========================================================================
 	# Install Freeswitch from packages
 	#===========================================================================
-   
+
 		if FS_KEY[FPBXParms.PARMS["Distro"][0]] != "add repo here":
 			print("Installing Freeswitch from Binary packages")
 			# Check to see if the Freeswitch key has been installed
